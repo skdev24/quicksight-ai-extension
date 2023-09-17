@@ -26,17 +26,28 @@ const Popup = () => {
     highlightsWithSummary: store.highlightsWithSummary,
   });
   const [highlightScreenData, setHighlightScreenData] = useState(null);
+  const [filterType, setFilterType] = useState<"none" | "new" | "old">("none");
 
   const highlightSummaryData = useMemo(
     () =>
-      store.highlightsWithSummary.filter((highlight) => {
-        if (selectedTag === "All") {
-          return true;
-        }
+      store.highlightsWithSummary
+        .filter((highlight) => {
+          if (selectedTag === "All") {
+            return true;
+          }
 
-        return highlight.tags.includes(selectedTag);
-      }),
-    [selectedTag, store.highlightsWithSummary]
+          return highlight.tags.includes(selectedTag);
+        })
+        .sort((a, b) => {
+          if (filterType === "new") {
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+          } else if (filterType === "old") {
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
+          }
+
+          return 0;
+        }),
+    [selectedTag, store.highlightsWithSummary, filterType]
   );
 
   const onSubmit = (data) => {
@@ -188,9 +199,26 @@ const Popup = () => {
         </div>
         {!highlightScreenData && (
           <div className="bg-noble-600 p-3">
-            <span className="text-xm font-medium text-noble-300">
-              Recent Highlights
-            </span>
+            <div className="flex flex-row justify-between items-center">
+              <span className="text-xm font-medium text-noble-300">
+                Recent Highlights
+              </span>
+              <select
+                id="countries"
+                className="border text-xs rounded-lg block p-1 bg-noble-600 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+                onChange={(event) => {
+                  console.log("event.target.value", event.target.value);
+
+                  setFilterType(event.target.value as "none" | "new" | "old");
+                }}
+              >
+                <option selected value="none">
+                  Filter by time
+                </option>
+                <option value="new">New to Old</option>
+                <option value="old">Old to New</option>
+              </select>
+            </div>
             <div className="flex flex-row justify-start my-2">
               <span className="text-xs font-medium text-noble-400 mr-2 mt-2">
                 Tags:{" "}
@@ -407,13 +435,8 @@ const Popup = () => {
                   <div
                     key={tag}
                     className={twMerge(
-                      "mt-2 rounded-[12px] bg-gradient-to-r from-[#A6B0F229] to-[#D7EDED29] text-noble-300 pb-[2px] mr-1 cursor-pointer px-3 justify-center items-center flex h-6",
-                      selectedTag === tag &&
-                        "text-green-600 border border-green-600"
+                      "mt-2 rounded-[12px] bg-gradient-to-r from-[#A6B0F229] to-[#D7EDED29] text-noble-300 pb-[2px] mr-1 px-3 justify-center items-center flex h-6"
                     )}
-                    onClick={() => {
-                      setSelectedTag(tag);
-                    }}
                   >
                     <span className="text-[8px] leading-none font-bold uppercase">
                       {tag}

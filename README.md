@@ -1,6 +1,6 @@
 <p align="center">
   <img src="public/icon-128.png" alt="QuickSight Chrome Extension Logo"/>
-  <h1 align="center">QuickSight Chrome Extension</h1>
+  <h1 align="center">QuickSight AI Chrome Extension</h1>
 </p>
 
 ---
@@ -20,7 +20,7 @@
 
 1. **Clone this Repository**
    ```bash
-   git clone https://github.com/your-repo/quicksight-chrome-extension.git
+   git clone https://github.com/skdev24/quicksight-ai-extension
    ```
 2. **Update Metadata**
 
