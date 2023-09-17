@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { twMerge } from "tailwind-merge";
-import cross from "@root/src/assets/img/cross.svg";
+import crossBlack from "@root/src/assets/img/cross-black.svg";
 import useStorage from "@src/shared/hooks/useStorage";
 import toggleStorage from "@src/shared/storages/toggleStorage";
 import extensionStorage from "@root/src/shared/storages/extensionStorage";
@@ -39,16 +39,17 @@ export default function App() {
     const onMouseUp = (event) => {
       const selection = window.getSelection();
       const selectedText = selection.toString().trim();
+      let currentPosition = position;
 
       if (
-        position &&
+        currentPosition &&
         selectedText.length > 0 &&
         selectedTextRef.current !== selectedText
       ) {
-        setPosition(null);
+        currentPosition = null;
       }
 
-      if (selectedText?.length > 0 && !position) {
+      if (selectedText?.length > 0 && !currentPosition) {
         let top = event.clientY + window.scrollY;
         const left = event.clientX + window.scrollX;
         setPosition({ top, left });
@@ -111,7 +112,7 @@ export default function App() {
         <h1 className="text-lg font-medium">QuickSight AI</h1>
       </div>
 
-      <div className="absolute top-2 right-2 w-6 h-6 rounded-lg bg-green-400 flex items-center justify-center">
+      <div className="absolute top-2 right-2 w-6 h-6 rounded-lg bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 flex items-center justify-center">
         <button
           className="text-[16px] text-black font-medium leading-none"
           onClick={() => {
@@ -119,7 +120,11 @@ export default function App() {
             setSelectedText("");
           }}
         >
-          <img src={chrome.runtime.getURL(cross)} className="w-4 h-4" alt="" />
+          <img
+            src={chrome.runtime.getURL(crossBlack)}
+            className="w-4 h-4"
+            alt=""
+          />
         </button>
       </div>
       <label
@@ -153,7 +158,19 @@ export default function App() {
           : `Character count: ${selectedText.length}/${charLimit}`}
       </div>
 
-      {!isOverLimit && (
+      {!contentData.isExtensionEnabled && (
+        <div className="flex flex-col justify-center items-center p-3 bg-noble-800 mb-3 rounded-lg h-24 w-full overflow-hidden cursor-pointer mt-3">
+          <img
+            src={chrome.runtime.getURL("/icon-128.png")}
+            className="h-6 w-6 object-contain mb-2"
+          />
+          <span className="text-sm font-medium text-red-400">
+            Extension is disabled
+          </span>
+        </div>
+      )}
+
+      {!isOverLimit && contentData.isExtensionEnabled && (
         <div className="mt-4">
           <label
             htmlFor="message"
