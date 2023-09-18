@@ -8,7 +8,8 @@
 ## 📖 Table of Contents
 
 - [Installation](#installation)
-  - [Procedures](#procedures)
+  - [Frontend Procedures](#frontend-procedures)
+  - [Backend Procedures](#backend-procedures)
 - [Screenshots](#screenshots)
   - [Extension](#extension)
 
@@ -16,12 +17,14 @@
 
 ## 🛠 Installation <a name="installation"></a>
 
-### 📋 Procedures <a name="procedures"></a>
+### 📋 Frontend Procedures <a name="procedures"></a>
 
 1. **Clone this Repository**
+
    ```bash
    git clone https://github.com/skdev24/quicksight-ai-extension
    ```
+
 2. **Update Metadata**
 
    - Change `name` and `description` in `package.json`. This will auto-synchronize with the manifest.
@@ -53,7 +56,29 @@
    yarn build  # or npm run build
    ```
 
----
+### 📋 Backend Procedures <a name="backend-procedures"></a>
+
+1. **Navigate to Backend Folder**
+
+   ```bash
+   cd backend
+   ```
+
+2. **Install Dependencies**
+
+   ```bash
+   yarn install
+   ```
+
+3. **Set OpenAI API Key**
+
+   - Add `OPENAI_API_KEY` to `.env` file.
+
+4. **Start Backend Server**
+   ```bash
+   yarn start
+   ```
+   Your server will run on [http://localhost:8080](http://localhost:8080).
 
 ## 📸 Screenshots <a name="screenshots"></a>
 
