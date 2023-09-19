@@ -4,7 +4,7 @@ import {
   StorageType,
 } from "@src/shared/storages/base";
 
-interface HighlightWithSummary {
+export interface HighlightWithSummary {
   id: string;
   highlightedText: string;
   url: string;
