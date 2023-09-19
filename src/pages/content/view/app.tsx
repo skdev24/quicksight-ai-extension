@@ -32,6 +32,7 @@ export default function App() {
 
   const tooltipRef = useRef(null);
   const selectedTextRef = useRef(null);
+  const positionRef = useRef(null);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((request) => {
@@ -44,11 +45,11 @@ export default function App() {
 
   // Keep track of mouseup event to capture position
   useEffect(() => {
-    if (isDragging) return;
+    // if (isDragging) return;
     const onMouseUp = (event) => {
       const selection = window.getSelection();
       const selectedText = selection.toString().trim();
-      let currentPosition = position;
+      let currentPosition = positionRef.current;
 
       if (
         currentPosition &&
@@ -76,7 +77,7 @@ export default function App() {
 
     document.addEventListener("mouseup", onMouseUp);
     return () => document.removeEventListener("mouseup", onMouseUp);
-  }, [position, isDragging]);
+  }, []);
 
   useEffect(() => {
     // Listen to messages from the background script
@@ -101,6 +102,7 @@ export default function App() {
   }, [position]);
 
   useEffect(() => {
+    positionRef.current = position;
     if (tooltipRef.current) {
       const tooltipHeight = tooltipRef.current.offsetHeight;
       if (position.top + tooltipHeight > window.innerHeight + window.scrollY) {
@@ -206,6 +208,8 @@ export default function App() {
         <button
           className="text-[16px] text-black font-medium leading-none"
           onClick={() => {
+            selectedTextRef.current = null;
+            positionRef.current = null;
             setPosition(null);
             setSelectedText("");
             setAiSummaryData("");
@@ -270,21 +274,30 @@ export default function App() {
               selectedTag,
               setSelectedTag,
               onAddSummary: () => {
-                extensionStorage.update("highlightsWithSummary", [
-                  ...contentData.highlightsWithSummary,
+                extensionStorage.update(
+                  "highlightsWithSummary",
+                  [
+                    ...contentData.highlightsWithSummary,
+                    {
+                      id: uuidv4() as string,
+                      highlightedText: selectedText,
+                      url: window.location.href,
+                      date: new Date().toISOString(),
+                      tags: [selectedTag || "none"],
+                      summary: aiSummaryData,
+                    },
+                  ],
                   {
-                    id: uuidv4() as string,
-                    highlightedText: selectedText,
-                    url: window.location.href,
-                    date: new Date().toISOString(),
-                    tags: [selectedTag || "none"],
-                    summary: aiSummaryData,
-                  },
-                ]);
+                    tags: contentData.tags,
+                    highlightsWithSummary: contentData.highlightsWithSummary,
+                  }
+                );
                 setPosition(null);
                 setAiSummaryData("");
                 setApiError("");
                 setIsLoading(false);
+                selectedTextRef.current = null;
+                positionRef.current = null;
               },
             }}
           />

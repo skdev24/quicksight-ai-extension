@@ -21,7 +21,8 @@ type StorageExtensionType = {
 type ThemeStorage = BaseStorage<StorageExtensionType> & {
   update: (
     type: keyof StorageExtensionType,
-    value: string[] | HighlightWithSummary[]
+    value: string[] | HighlightWithSummary[],
+    previousData?: StorageExtensionType
   ) => void;
 };
 
@@ -40,11 +41,13 @@ const extensionStorage: ThemeStorage = {
   ...store,
   update: (
     type: keyof StorageExtensionType,
-    value: string[] | HighlightWithSummary[]
+    value: string[] | HighlightWithSummary[],
+    previousData?: StorageExtensionType
   ) => {
     store.set((prev: StorageExtensionType) => {
       return {
         ...prev,
+        ...previousData,
         [type]: value,
       };
     });
