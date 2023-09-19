@@ -3,8 +3,7 @@ import toggleStorage from "@src/shared/storages/toggleStorage";
 import extensionStorage from "@root/src/shared/storages/extensionStorage";
 import withSuspense from "@src/shared/hoc/withSuspense";
 import { useEffect, useMemo, useState } from "react";
-import { twMerge } from "tailwind-merge";
-import { useForm } from "react-hook-form";
+
 import SummaryPage from "@root/src/components/summary-page";
 import Message from "@root/src/components/message";
 import Tags from "@root/src/components/tags";
@@ -14,12 +13,6 @@ import AddTagModal from "@root/src/components/add-tag";
 const Popup = () => {
   const toggle = useStorage(toggleStorage);
   const store = useStorage(extensionStorage);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm();
 
   const [selectedTag, setSelectedTag] = useState("All");
   const [isModalVisible, setModalVisible] = useState(false);
@@ -54,7 +47,6 @@ const Popup = () => {
   );
 
   const onSubmit = (data) => {
-    reset();
     setContentData((prev) => ({
       ...prev,
       tags: [...prev.tags, data.tag?.toLocaleLowerCase()],
@@ -109,7 +101,6 @@ const Popup = () => {
           {...{
             isModalVisible,
             setModalVisible,
-            reset,
             onSubmit,
             tags: store?.tags,
           }}

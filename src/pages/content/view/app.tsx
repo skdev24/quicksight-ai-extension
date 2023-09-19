@@ -155,8 +155,8 @@ export default function App() {
     const dy = e.clientY - initialMousePos.y;
 
     setPosition((prev) => {
-      const newTop = prev.top + dy * 0.025; // Slow down vertical movement
-      const newLeft = prev.left + dx * 0.025; // Slow down horizontal movement
+      const newTop = prev.top + dy * 0.02; // Slow down vertical movement
+      const newLeft = prev.left + dx * 0.02; // Slow down horizontal movement
 
       return {
         top: newTop,
