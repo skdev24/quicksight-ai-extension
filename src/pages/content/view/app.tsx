@@ -27,6 +27,8 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState("");
   const [aiSummaryData, setAiSummaryData] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
+  const [initialMousePos, setInitialMousePos] = useState({ x: 0, y: 0 });
 
   const tooltipRef = useRef(null);
   const selectedTextRef = useRef(null);
@@ -42,6 +44,7 @@ export default function App() {
 
   // Keep track of mouseup event to capture position
   useEffect(() => {
+    if (isDragging) return;
     const onMouseUp = (event) => {
       const selection = window.getSelection();
       const selectedText = selection.toString().trim();
@@ -73,7 +76,7 @@ export default function App() {
 
     document.addEventListener("mouseup", onMouseUp);
     return () => document.removeEventListener("mouseup", onMouseUp);
-  }, [position]);
+  }, [position, isDragging]);
 
   useEffect(() => {
     // Listen to messages from the background script
@@ -137,6 +140,52 @@ export default function App() {
     }
   }, [selectedText, contentData, isLoading, aiSummaryData, isOverLimit]);
 
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setInitialMousePos({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseMove = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (!isDragging) return;
+
+    const dx = e.clientX - initialMousePos.x;
+    const dy = e.clientY - initialMousePos.y;
+
+    setPosition((prev) => {
+      const newTop = prev.top + dy * 0.025; // Slow down vertical movement
+      const newLeft = prev.left + dx * 0.025; // Slow down horizontal movement
+
+      return {
+        top: newTop,
+        left: newLeft,
+      };
+    });
+
+    setInitialMousePos({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setInitialMousePos({ x: 0, y: 0 }); // Resetting to initial state
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    } else {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    }
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging]);
+
   const tooltipStyle = twMerge(
     "absolute p-4 w-[400px] rounded-md shadow-md !z-[9999] rounded-md border-2 border-lime-400",
     `top-[${position?.top}px] left-[${position?.left}px]`,
@@ -144,7 +193,11 @@ export default function App() {
   );
 
   return selectedText.length > 0 ? (
-    <div className={tooltipStyle} ref={tooltipRef}>
+    <div
+      className={tooltipStyle}
+      ref={tooltipRef}
+      onMouseDown={handleMouseDown}
+    >
       <div className="flex items-center justify-center mb-2">
         <h1 className="text-lg font-medium">QuickSight AI</h1>
       </div>
