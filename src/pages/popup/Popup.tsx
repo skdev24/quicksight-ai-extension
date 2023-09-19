@@ -140,7 +140,7 @@ const Popup = () => {
               {...{
                 tags: store.tags,
                 selectedTag,
-                onAddTagPress: (tag) => {
+                onDeleteTagPress: (tag) => {
                   setContentData((prev) => ({
                     ...prev,
                     tags: prev.tags.filter((t) => t !== tag),

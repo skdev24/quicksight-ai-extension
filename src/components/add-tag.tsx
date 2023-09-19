@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 
@@ -19,6 +19,12 @@ export default function AddTagModal({
     formState: { errors },
     reset,
   } = useForm();
+
+  useEffect(() => {
+    return () => {
+      reset();
+    };
+  }, [isModalVisible]);
 
   return (
     <div

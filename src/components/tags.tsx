@@ -6,12 +6,12 @@ export default function Tags({
   tags,
   selectedTag,
   setSelectedTag,
-  onAddTagPress,
+  onDeleteTagPress,
   setModalVisible,
 }: {
   tags: string[];
   selectedTag: string;
-  onAddTagPress: (tag: string) => void;
+  onDeleteTagPress: (tag: string) => void;
   setSelectedTag: React.Dispatch<React.SetStateAction<string>>;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
@@ -49,7 +49,7 @@ export default function Tags({
                   className="h-3 w-3 justify-center items-center ml-1 flex"
                   onClick={(event) => {
                     event.stopPropagation();
-                    onAddTagPress(tag);
+                    onDeleteTagPress(tag);
                   }}
                 >
                   <img
