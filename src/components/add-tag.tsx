@@ -113,7 +113,7 @@ export default function AddTagModal({
 
               <button
                 type="submit"
-                className="w-full text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-green-600 hover:bg-green-700 focus:ring-green-800"
+                className="w-full text-gray-800 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-lime-700 focus:ring-lime-800"
               >
                 Add Tag
               </button>
