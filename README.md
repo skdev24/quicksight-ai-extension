@@ -84,4 +84,4 @@
 
 ### 🌟 Extension <a name="extension"></a>
 
-![QuickSight Chrome Extension Screenshot](./quicksight-ai.png)
+![QuickSight Chrome Extension Screenshot](./quicksight-ai-screenshot.png)
