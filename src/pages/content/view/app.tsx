@@ -105,7 +105,7 @@ export default function App() {
     positionRef.current = position;
     if (tooltipRef.current) {
       const tooltipHeight = tooltipRef.current.offsetHeight;
-      if (position.top + tooltipHeight > window.innerHeight + window.scrollY) {
+      if (position?.top + tooltipHeight > window.innerHeight + window.scrollY) {
         setPosition((prev) => ({ ...prev, top: prev.top - tooltipHeight }));
       }
     }
@@ -123,8 +123,6 @@ export default function App() {
         try {
           setIsLoading(true);
           const response = await getHighlightedTextSummary(selectedText);
-
-          console.log("RESPONSE", response);
 
           if (response?.summary) {
             const formattedSummary = response.summary.replace(/\n/g, "<br>");
@@ -194,6 +192,16 @@ export default function App() {
     "bg-noble-700 text-white"
   );
 
+  const reset = () => {
+    selectedTextRef.current = null;
+    positionRef.current = null;
+    setPosition(null);
+    setSelectedText("");
+    setAiSummaryData("");
+    setApiError("");
+    setIsLoading(false);
+  };
+
   return selectedText.length > 0 ? (
     <div
       className={tooltipStyle}
@@ -207,15 +215,7 @@ export default function App() {
       <div className="absolute top-2 right-2 w-6 h-6 rounded-lg bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 flex items-center justify-center">
         <button
           className="text-[16px] text-black font-medium leading-none"
-          onClick={() => {
-            selectedTextRef.current = null;
-            positionRef.current = null;
-            setPosition(null);
-            setSelectedText("");
-            setAiSummaryData("");
-            setApiError("");
-            setIsLoading(false);
-          }}
+          onClick={reset}
         >
           <img
             src={chrome.runtime.getURL(crossBlack)}
@@ -292,12 +292,7 @@ export default function App() {
                     highlightsWithSummary: contentData.highlightsWithSummary,
                   }
                 );
-                setPosition(null);
-                setAiSummaryData("");
-                setApiError("");
-                setIsLoading(false);
-                selectedTextRef.current = null;
-                positionRef.current = null;
+                reset();
               },
             }}
           />

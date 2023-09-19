@@ -13,7 +13,7 @@ export default function Message({
   isApiError?: boolean;
 }) {
   return (
-    <div className="flex flex-col justify-center items-center p-3 bg-noble-800 mb-3 rounded-lg h-32 w-full overflow-hidden cursor-pointer">
+    <div className="flex mt-2 flex-col justify-center items-center p-3 bg-noble-800 mb-3 rounded-lg h-32 w-full overflow-hidden cursor-pointer">
       {!isLoading && (
         <img
           src={chrome.runtime.getURL("/icon-128.png")}
@@ -28,7 +28,7 @@ export default function Message({
       {(!isLoading || isApiError) && (
         <span className="text-sm font-medium text-red-400">{error}</span>
       )}
-      {isLoading && <Loading />}
+      {isLoading && !isApiError && <Loading />}
     </div>
   );
 }
