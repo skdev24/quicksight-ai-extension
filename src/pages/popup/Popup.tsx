@@ -422,9 +422,10 @@ const Popup = () => {
               <span
                 id="message"
                 className="block p-2.5 w-full text-sm text-noble-100/70 font-medium custom-scroll bg-green-900/40 tracking-wide leading-1.5"
-              >
-                {highlightScreenData.summary}
-              </span>
+                dangerouslySetInnerHTML={{
+                  __html: highlightScreenData.summary,
+                }}
+              ></span>
             </div>
             <div className="flex flex-row justify-start mb-2">
               <span className="text-xs font-medium text-noble-400 mr-2 mt-2">

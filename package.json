@@ -17,6 +17,7 @@
   "type": "module",
   "dependencies": {
     "@twind/preset-line-clamp": "^1.0.7",
+    "axios": "^1.5.0",
     "construct-style-sheets-polyfill": "^3.1.0",
     "dayjs": "^1.11.9",
     "react": "18.2.0",
