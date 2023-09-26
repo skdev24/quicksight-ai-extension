@@ -27,12 +27,13 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState("");
   const [aiSummaryData, setAiSummaryData] = useState("");
-  const [isDragging, setIsDragging] = useState(false);
-  const [initialMousePos, setInitialMousePos] = useState({ x: 0, y: 0 });
 
   const tooltipRef = useRef(null);
+  const isDragging = useRef(null);
   const selectedTextRef = useRef(null);
   const positionRef = useRef(null);
+  const offsetX = useRef(0);
+  const offsetY = useRef(0);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((request) => {
@@ -102,16 +103,6 @@ export default function App() {
   }, [position]);
 
   useEffect(() => {
-    positionRef.current = position;
-    if (tooltipRef.current) {
-      const tooltipHeight = tooltipRef.current.offsetHeight;
-      if (position?.top + tooltipHeight > window.innerHeight + window.scrollY) {
-        setPosition((prev) => ({ ...prev, top: prev.top - tooltipHeight }));
-      }
-    }
-  }, [position]);
-
-  useEffect(() => {
     if (
       selectedText &&
       contentData.isExtensionEnabled &&
@@ -140,51 +131,12 @@ export default function App() {
     }
   }, [selectedText, contentData, isLoading, aiSummaryData, isOverLimit]);
 
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    setInitialMousePos({ x: e.clientX, y: e.clientY });
-  };
-
-  const handleMouseMove = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-
-    if (!isDragging) return;
-
-    const dx = e.clientX - initialMousePos.x;
-    const dy = e.clientY - initialMousePos.y;
-
-    setPosition((prev) => {
-      const newTop = prev.top + dy * 0.02; // Slow down vertical movement
-      const newLeft = prev.left + dx * 0.02; // Slow down horizontal movement
-
-      return {
-        top: newTop,
-        left: newLeft,
-      };
-    });
-
-    setInitialMousePos({ x: e.clientX, y: e.clientY });
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    setInitialMousePos({ x: 0, y: 0 }); // Resetting to initial state
-  };
-
   useEffect(() => {
-    if (isDragging) {
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
-    } else {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    }
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging]);
+  }, []);
 
   const tooltipStyle = twMerge(
     "absolute p-4 w-[400px] rounded-md shadow-md !z-[9999] rounded-md border-2 border-lime-400",
@@ -202,10 +154,41 @@ export default function App() {
     setIsLoading(false);
   };
 
+  function handleMouseDown(e) {
+    isDragging.current = true;
+
+    if (tooltipRef.current) {
+      const rect = tooltipRef.current.getBoundingClientRect();
+      offsetX.current = e.clientX - rect.left;
+      offsetY.current = e.clientY - rect.top;
+
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    }
+  }
+
+  function handleMouseMove(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (isDragging.current) {
+      const top = e.clientY + window.scrollY - offsetY.current;
+      const left = e.clientX + window.scrollX - offsetX.current;
+
+      setPosition({ top, left });
+    }
+  }
+
+  function handleMouseUp() {
+    isDragging.current = false;
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+  }
+
   return selectedText.length > 0 ? (
     <div
-      className={tooltipStyle}
       ref={tooltipRef}
+      className={tooltipStyle}
       onMouseDown={handleMouseDown}
     >
       <div className="flex items-center justify-center mb-2">

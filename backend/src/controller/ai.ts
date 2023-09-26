@@ -3,7 +3,11 @@ import OpenAIService from "../services/openai";
 
 export const getSummaryByAi = async (req: Request, res: Response) => {
   try {
-    const highlightedText = req.body?.highlightedText;
+    let highlightedText = req.body?.highlightedText;
+
+    highlightedText = `${highlightedText}`
+      .replace(/(\r\n|\n|\r)/gm, "")
+      .replace(/(\r\t|\t|\r)/gm, "");
 
     if (!highlightedText) {
       return res
